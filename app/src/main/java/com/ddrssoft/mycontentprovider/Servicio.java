@@ -10,7 +10,12 @@ import android.os.IBinder;
 import android.provider.Telephony;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Servicio extends Service {
+    // TAG para usar en Logcat
     private static final String TAG = "MyService";
     private Handler handler;
 
@@ -39,17 +44,22 @@ public class Servicio extends Service {
                 if (cursor != null) {
                     int id = 1;
                     while (cursor.moveToNext()) {
-                        int fecha = cursor.getColumnIndex(Telephony.Sms.DATE);
+                        int fecha  = cursor.getColumnIndex(Telephony.Sms.DATE);
                         int contacto = cursor.getColumnIndex(Telephony.Sms.ADDRESS);
                         int mensaje = cursor.getColumnIndex(Telephony.Sms.BODY);
 
-                        String date = cursor.getString(fecha);
+                        // Y como todo JAVA...hay q formatear la fecha...facil¿?
+                        long fechalong = cursor.getLong(fecha);
+                        Date date = new Date(fechalong);
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                        String fechaDate = sdf.format(date);
+
                         String address = cursor.getString(contacto);
                         String body = cursor.getString(mensaje);
 
                         // Mostrar datos en la consola de depuración
                         Log.d(TAG, "Mensaje N°: " + id);
-                        Log.d(TAG, "Fecha: " + date);
+                        Log.d(TAG, "Fecha: " + fechaDate);
                         Log.d(TAG, "Número: " + address);
                         Log.d(TAG, "Contenido: " + body);
                         id++;
